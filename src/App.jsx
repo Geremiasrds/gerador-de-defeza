@@ -113,9 +113,8 @@ function App() {
     <Container>
       <Title>Gerador de Defesa Prévia</Title>
 
-      <label style={{ fontWeight: "600", marginBottom: 6, display: "block" }}>
-        Escolha o título do documento:
-      </label>
+      {/* Título do documento */}
+      <label>Escolha o título do documento:</label>
       <select
         value={titulo}
         onChange={(e) => setTitulo(e.target.value)}
@@ -137,25 +136,74 @@ function App() {
         <option value="Contestação de Infração">Contestação de Infração</option>
       </select>
 
-      <Input type="text" placeholder="Seu nome" value={nome} onChange={(e) => setNome(e.target.value)} />
-      <Input type="date" placeholder="Data da infração" value={data} onChange={(e) => setData(e.target.value)} />
-      <Input type="time" placeholder="Hora da infração" value={hora} onChange={(e) => setHora(e.target.value)} />
-      <Input type="text" placeholder="Número da multa" value={numeroMulta} onChange={(e) => setNumeroMulta(e.target.value)} />
-      <Input type="text" placeholder="Local da infração" value={local} onChange={(e) => setLocal(e.target.value)} />
-      <Input type="text" placeholder="Placa do veículo" value={placa} onChange={(e) => setPlaca(e.target.value)} />
-      <Input type="text" placeholder="CNH (opcional)" value={cnh} onChange={(e) => setCnh(e.target.value)} />
-      <Input type="text" placeholder="CPF (opcional)" value={cpf} onChange={(e) => setCpf(e.target.value)} />
-      <Input type="tel" placeholder="Telefone (opcional)" value={telefone} onChange={(e) => setTelefone(e.target.value)} />
-      <Input type="email" placeholder="E-mail (opcional)" value={email} onChange={(e) => setEmail(e.target.value)} />
-      <Textarea rows={6} placeholder="Texto da defesa" value={textoDefesa} onChange={(e) => setTextoDefesa(e.target.value)} />
-      <Input type="text" placeholder="Nome para assinatura (opcional)" value={nomeAssinatura} onChange={(e) => setNomeAssinatura(e.target.value)} style={{ marginBottom: 30 }} />
+      {/* Nome completo */}
+      <label htmlFor="nome">Nome completo:</label>
+      <Input id="nome" type="text" placeholder="Seu nome" value={nome} onChange={(e) => setNome(e.target.value)} />
 
+      {/* Data da infração */}
+      <label htmlFor="data">Data da infração:</label>
+      <Input id="data" type="date" value={data} onChange={(e) => setData(e.target.value)} />
+
+      {/* Hora da infração */}
+      <label htmlFor="hora">Hora da infração:</label>
+      <Input id="hora" type="time" value={hora} onChange={(e) => setHora(e.target.value)} />
+
+      {/* Número da multa */}
+      <label htmlFor="multa">Número da multa:</label>
+      <Input id="multa" type="text" placeholder="Número da multa" value={numeroMulta} onChange={(e) => setNumeroMulta(e.target.value)} />
+
+      {/* Local da infração */}
+      <label htmlFor="local">Local da infração:</label>
+      <Input id="local" type="text" placeholder="Local da infração" value={local} onChange={(e) => setLocal(e.target.value)} />
+
+      {/* Placa do veículo */}
+      <label htmlFor="placa">Placa do veículo:</label>
+      <Input id="placa" type="text" placeholder="Placa do veículo" value={placa} onChange={(e) => setPlaca(e.target.value)} />
+
+      {/* CNH */}
+      <label htmlFor="cnh">CNH (opcional):</label>
+      <Input id="cnh" type="text" placeholder="CNH" value={cnh} onChange={(e) => setCnh(e.target.value)} />
+
+      {/* CPF */}
+      <label htmlFor="cpf">CPF (opcional):</label>
+      <Input id="cpf" type="text" placeholder="CPF" value={cpf} onChange={(e) => setCpf(e.target.value)} />
+
+      {/* Telefone */}
+      <label htmlFor="telefone">Telefone (opcional):</label>
+      <Input id="telefone" type="tel" placeholder="Telefone" value={telefone} onChange={(e) => setTelefone(e.target.value)} />
+
+      {/* Email */}
+      <label htmlFor="email">E-mail (opcional):</label>
+      <Input id="email" type="email" placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} />
+
+      {/* Texto da defesa */}
+      <label htmlFor="defesa">Texto da defesa:</label>
+      <Textarea
+        id="defesa"
+        rows={6}
+        placeholder="Explique os motivos da sua defesa"
+        value={textoDefesa}
+        onChange={(e) => setTextoDefesa(e.target.value)}
+      />
+
+      {/* Nome para assinatura */}
+      <label htmlFor="assinatura">Nome para assinatura (opcional):</label>
+      <Input
+        id="assinatura"
+        type="text"
+        placeholder="Nome da assinatura"
+        value={nomeAssinatura}
+        onChange={(e) => setNomeAssinatura(e.target.value)}
+        style={{ marginBottom: 30 }}
+      />
+
+      {/* PDF Preview + Geração */}
       <PdfContent ref={pdfRef}>
-        <HeaderText>Presidente JARE/SEMOB</HeaderText>
+        <HeaderText />
         <PdfTitle>{titulo}</PdfTitle>
 
         <p>
-          Eu, <strong>{nome || "[nome não informado]"}</strong>, Venho apresentar minha defesa prévia referente à infração registrada no
+          Eu, <strong>{nome || "[nome não informado]"}</strong>, venho apresentar minha defesa prévia referente à infração registrada no
           dia <strong>{formatarData(data)}</strong>{hora ? ` às ${hora}` : ""}.
           <br /><br />
           A infração de número{" "}
@@ -167,14 +215,14 @@ function App() {
           {cpf && <>CPF: <strong>{cpf}</strong><br /></>}
           {telefone && <>Telefone: <strong>{telefone}</strong><br /></>}
           {email && <>E-mail: <strong>{email}</strong><br /></>}
-          
+
+          <br /><br />
           {textoDefesa || "[texto da defesa não informado]"}
-          <br />
-          Solicito a análise cuidadosa dessa defesa e a reconsideração da multa
-          aplicada.
+          <br /><br />
+          Solicito a análise cuidadosa dessa defesa e a reconsideração da multa aplicada.
           <br /><br />
           Atenciosamente,
-          <br /><br />
+          <br />
         </p>
 
         <SignatureLine />
