@@ -73,8 +73,8 @@ export const Textarea = styled.textarea`
 `;
 
 export const PdfContent = styled.div`
-  width: 508px;
-  padding: 30px 50px;
+  width: 590px;
+  padding: 10px 40px;
   background-color:rgb(255, 255, 255);
   border: 1px solid #ccc;
   border-radius: 10px;
