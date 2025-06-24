@@ -79,7 +79,7 @@ export const PdfContent = styled.div`
   border: 1px solid #ccc;
   border-radius: 10px;
   color: #222;
-  font-size: 13px;
+  font-size: 11px;
   line-height: 1.8;
   font-family: strong;
   box-sizing: border-box;
