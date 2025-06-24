@@ -59,18 +59,23 @@ export const Textarea = styled.textarea`
     box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
   }
 `;
-
 export const PdfContent = styled.div`
-  padding: 32px;
-  background-color: #fff;
+  width: 595px;           /* A4 width em px a 72dpi */
+  height: 842px;          /* A4 height em px a 72dpi */
+  padding: 50px 40px;
+  background-color: #ffffff;
   border: 1px solid #ccc;
-  border-radius: 8px;
-  max-width: 595px; /* largura A4 */
+  border-radius: 10px;
   color: #222;
+  font-size: 14px;
+  line-height: 1.8;       /* melhora o respiro entre linhas */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   white-space: pre-wrap;
-  font-size: 12px;
-  line-height: 1.5;
-  margin: 0 auto;
+  overflow: hidden;
 `;
 
 export const HeaderText = styled.div`
