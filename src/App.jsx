@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
@@ -36,24 +36,54 @@ function App() {
   const [textoDefesa, setTextoDefesa] = useState("");
   const [nomeAssinatura, setNomeAssinatura] = useState("");
 
-  // Essa função gera o texto completo para uso interno, mas o conteúdo que será capturado no PDF
-  // deve mostrar os dados já formatados no JSX (especialmente a data)
-  const montarDefesaCompleta = () => {
-    return `Eu, ${nome || "[nome não informado]"}, venho por meio desta apresentar minha defesa prévia referente à infração registrada no dia ${formatarData(data)}${hora ? ` às ${hora}` : ""}.
+  // Recuperar dados do localStorage ao carregar
+  useEffect(() => {
+    const dadosSalvos = localStorage.getItem("defesaForm");
+    if (dadosSalvos) {
+      const dados = JSON.parse(dadosSalvos);
+      setTitulo(dados.titulo || "Defesa Prévia");
+      setNome(dados.nome || "");
+      setData(dados.data || "");
+      setHora(dados.hora || "");
+      setNumeroMulta(dados.numeroMulta || "");
+      setLocal(dados.local || "");
+      setCnh(dados.cnh || "");
+      setCpf(dados.cpf || "");
+      setTelefone(dados.telefone || "");
+      setTextoDefesa(dados.textoDefesa || "");
+      setNomeAssinatura(dados.nomeAssinatura || "");
+    }
+  }, []);
 
-A infração de número ${numeroMulta || "[número da multa não informado]"} ocorreu no local ${local || "[local não informado]"}.
-
-CNH: ${cnh || "[não informada]"}
-CPF: ${cpf || "[não informado]"}
-Telefone: ${telefone || "[não informado]"}
-
-${textoDefesa || "[texto da defesa não informado]"}
-
-Solicito a análise cuidadosa dessa defesa e a reconsideração da multa aplicada.
-
-Atenciosamente,
-${nome || "[nome não informado]"}`;
-  };
+  // Salvar dados no localStorage quando qualquer valor mudar
+  useEffect(() => {
+    const dados = {
+      titulo,
+      nome,
+      data,
+      hora,
+      numeroMulta,
+      local,
+      cnh,
+      cpf,
+      telefone,
+      textoDefesa,
+      nomeAssinatura,
+    };
+    localStorage.setItem("defesaForm", JSON.stringify(dados));
+  }, [
+    titulo,
+    nome,
+    data,
+    hora,
+    numeroMulta,
+    local,
+    cnh,
+    cpf,
+    telefone,
+    textoDefesa,
+    nomeAssinatura,
+  ]);
 
   const gerarPDF = () => {
     const input = pdfRef.current;
@@ -97,128 +127,47 @@ ${nome || "[nome não informado]"}`;
         <option value="Contestação de Infração">Contestação de Infração</option>
       </select>
 
-      <Input
-        type="text"
-        placeholder="Seu nome"
-        value={nome}
-        onChange={(e) => setNome(e.target.value)}
-      />
-
-      <Input
-        type="date"
-        placeholder="Data da infração"
-        value={data}
-        onChange={(e) => setData(e.target.value)}
-      />
-
-      <Input
-        type="time"
-        placeholder="Hora da infração"
-        value={hora}
-        onChange={(e) => setHora(e.target.value)}
-      />
-
-      <Input
-        type="text"
-        placeholder="Número da multa"
-        value={numeroMulta}
-        onChange={(e) => setNumeroMulta(e.target.value)}
-      />
-
-      <Input
-        type="text"
-        placeholder="Local da infração"
-        value={local}
-        onChange={(e) => setLocal(e.target.value)}
-      />
-
-      <Input
-        type="text"
-        placeholder="CNH (opcional)"
-        value={cnh}
-        onChange={(e) => setCnh(e.target.value)}
-      />
-
-      <Input
-        type="text"
-        placeholder="CPF (opcional)"
-        value={cpf}
-        onChange={(e) => setCpf(e.target.value)}
-      />
-
-      <Input
-        type="tel"
-        placeholder="Telefone (opcional)"
-        value={telefone}
-        onChange={(e) => setTelefone(e.target.value)}
-      />
-
-      <Textarea
-        rows={6}
-        placeholder="Texto da defesa"
-        value={textoDefesa}
-        onChange={(e) => setTextoDefesa(e.target.value)}
-      />
-
-      <Input
-        type="text"
-        placeholder="Nome para assinatura (opcional)"
-        value={nomeAssinatura}
-        onChange={(e) => setNomeAssinatura(e.target.value)}
-        style={{ marginBottom: 30 }}
-      />
+      <Input type="text" placeholder="Seu nome" value={nome} onChange={(e) => setNome(e.target.value)} />
+      <Input type="date" placeholder="Data da infração" value={data} onChange={(e) => setData(e.target.value)} />
+      <Input type="time" placeholder="Hora da infração" value={hora} onChange={(e) => setHora(e.target.value)} />
+      <Input type="text" placeholder="Número da multa" value={numeroMulta} onChange={(e) => setNumeroMulta(e.target.value)} />
+      <Input type="text" placeholder="Local da infração" value={local} onChange={(e) => setLocal(e.target.value)} />
+      <Input type="text" placeholder="CNH (opcional)" value={cnh} onChange={(e) => setCnh(e.target.value)} />
+      <Input type="text" placeholder="CPF (opcional)" value={cpf} onChange={(e) => setCpf(e.target.value)} />
+      <Input type="tel" placeholder="Telefone (opcional)" value={telefone} onChange={(e) => setTelefone(e.target.value)} />
+      <Textarea rows={6} placeholder="Texto da defesa" value={textoDefesa} onChange={(e) => setTextoDefesa(e.target.value)} />
+      <Input type="text" placeholder="Nome para assinatura (opcional)" value={nomeAssinatura} onChange={(e) => setNomeAssinatura(e.target.value)} style={{ marginBottom: 30 }} />
 
       <PdfContent ref={pdfRef}>
-  <HeaderText>Presidente JARE/SEMOB</HeaderText>
-  <PdfTitle>{titulo}</PdfTitle>
+        <HeaderText></HeaderText>
+        <PdfTitle>{titulo}</PdfTitle>
 
-  <p>
-    Eu, <strong>{nome || "[nome não informado]"}</strong>, venho por meio
-    desta apresentar minha defesa prévia referente à infração registrada no
-    dia <strong>{formatarData(data)}</strong>
-    {hora ? ` às ${hora}` : ""}.
-    <br />
-    <br />
-    A infração de número{" "}
-    <strong>{numeroMulta || "[número da multa não informado]"}</strong>{" "}
-    ocorreu no local <strong>{local || "[local não informado]"}</strong>.
-    <br />
-    <br />
-    {cnh && (
-      <>
-        CNH: <strong>{cnh}</strong>
-        <br />
-      </>
-    )}
-    {cpf && (
-      <>
-        CPF: <strong>{cpf}</strong>
-        <br />
-      </>
-    )}
-    {telefone && (
-      <>
-        Telefone: <strong>{telefone}</strong>
-        <br />
-      </>
-    )}
-    <br />
-    {textoDefesa || "[texto da defesa não informado]"}
-    <br />
-    <br />
-    Solicito a análise cuidadosa dessa defesa e a reconsideração da multa
-    aplicada.
-    <br />
-    <br />
-    Atenciosamente,
-    <br />
-    <br />
-  </p>
+        <p>
+          Eu, <strong>{nome || "[nome não informado]"}</strong>, venho por meio
+          desta apresentar minha defesa prévia referente à infração registrada no
+          dia <strong>{formatarData(data)}</strong>
+          {hora ? ` às ${hora}` : ""}.
+          <br /><br />
+          A infração de número{" "}
+          <strong>{numeroMulta || "[número da multa não informado]"}</strong>{" "}
+          ocorreu no local <strong>{local || "[local não informado]"}</strong>.
+          <br /><br />
+          {cnh && <>CNH: <strong>{cnh}</strong><br /></>}
+          {cpf && <>CPF: <strong>{cpf}</strong><br /></>}
+          {telefone && <>Telefone: <strong>{telefone}</strong><br /></>}
+          <br />
+          {textoDefesa || "[texto da defesa não informado]"}
+          <br /><br />
+          Solicito a análise cuidadosa dessa defesa e a reconsideração da multa
+          aplicada.
+          <br /><br />
+          Atenciosamente,
+          <br /><br />
+        </p>
 
-  <SignatureLine />
-  <SignatureText>{nomeAssinatura || ""}</SignatureText>
-</PdfContent>
-
+        <SignatureLine />
+        <SignatureText>{nomeAssinatura || ""}</SignatureText>
+      </PdfContent>
 
       <Button onClick={gerarPDF}>Gerar PDF</Button>
     </Container>
