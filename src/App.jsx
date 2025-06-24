@@ -216,7 +216,7 @@ function App() {
           {telefone && <>Telefone: <strong>{telefone}</strong><br /></>}
           {email && <>E-mail: <strong>{email}</strong><br /></>}
 
-          <br /><br />
+          <br />
           {textoDefesa || "[texto da defesa não informado]"}
           <br />
           Solicito a análise cuidadosa dessa defesa e a reconsideração da multa aplicada.
