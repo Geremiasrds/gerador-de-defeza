@@ -74,29 +74,16 @@ export const Textarea = styled.textarea`
 
 export const PdfContent = styled.div`
   width: 595px;
-  height: 842px;
   padding: 50px 40px;
   background-color: #ffffff;
   border: 1px solid #ccc;
   border-radius: 10px;
   color: #222;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.8;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
   white-space: pre-wrap;
-  overflow: hidden;
-  margin: 0 auto;
-
-  @media (max-width: 650px) {
-    transform: scale(0.6);         /* escala menor só na visualização mobile */
-    transform-origin: top center;
-    width: 100%;
-    height: auto;
-  }
 `;
 
 export const HeaderText = styled.div`
