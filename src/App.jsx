@@ -205,11 +205,11 @@ function App() {
         <p>
           Eu, <strong>{nome || "[nome não informado]"}</strong>, venho apresentar minha defesa prévia referente à infração registrada no
           dia <strong>{formatarData(data)}</strong>{hora ? ` às ${hora}` : ""}.
-          <br />
+          
           A infração de número{" "}
           <strong>{numeroMulta || "[número da multa não informado]"}</strong>{" "}
           ocorreu no local <strong>{local || "[local não informado]"}</strong>.
-          <br />
+          
           {placa && <>Placa do veículo: <strong>{placa}</strong><br /></>}
           {cnh && <>CNH: <strong>{cnh}</strong><br /></>}
           {cpf && <>CPF: <strong>{cpf}</strong><br /></>}
