@@ -13,8 +13,9 @@ export const Container = styled.div`
   font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
   @media (max-width: 600px) {
-    padding: 24px 20px;
-    margin: 20px 15px;
+    padding: 20px 16px;
+    margin: 20px 12px;
+    gap: 16px;
   }
 `;
 
@@ -23,7 +24,10 @@ export const Title = styled.h2`
   font-size: 2.4rem;
   color: #222;
   text-align: center;
-  margin-bottom: 10px;
+
+  @media (max-width: 600px) {
+    font-size: 1.8rem;
+  }
 `;
 
 export const Input = styled.input`
@@ -39,6 +43,10 @@ export const Input = styled.input`
     background-color: #f4fff6;
     outline: none;
     box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+  }
+
+  @media (max-width: 600px) {
+    font-size: 0.95rem;
   }
 `;
 
@@ -58,17 +66,22 @@ export const Textarea = styled.textarea`
     outline: none;
     box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
   }
+
+  @media (max-width: 600px) {
+    font-size: 0.95rem;
+  }
 `;
+
 export const PdfContent = styled.div`
-  width: 595px;           /* A4 width em px a 72dpi */
-  height: 842px;          /* A4 height em px a 72dpi */
+  width: 595px;
+  height: 842px;
   padding: 50px 40px;
   background-color: #ffffff;
   border: 1px solid #ccc;
   border-radius: 10px;
   color: #222;
-  font-size: 14px;
-  line-height: 1.8;       /* melhora o respiro entre linhas */
+  font-size: 15px;
+  line-height: 1.8;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   box-sizing: border-box;
   display: flex;
@@ -76,6 +89,14 @@ export const PdfContent = styled.div`
   justify-content: flex-start;
   white-space: pre-wrap;
   overflow: hidden;
+  margin: 0 auto;
+
+  @media (max-width: 650px) {
+    transform: scale(0.6);         /* escala menor só na visualização mobile */
+    transform-origin: top center;
+    width: 100%;
+    height: auto;
+  }
 `;
 
 export const HeaderText = styled.div`
@@ -92,6 +113,10 @@ export const PdfTitle = styled.h2`
   font-weight: 700;
   font-size: 1.9rem;
   color: #2c2c2c;
+
+  @media (max-width: 600px) {
+    font-size: 1.5rem;
+  }
 `;
 
 export const Button = styled.button`
@@ -116,6 +141,11 @@ export const Button = styled.button`
     background-color: #3a8a3c;
     box-shadow: 0 4px 10px rgba(58, 138, 60, 0.25);
     transform: scale(0.97);
+  }
+
+  @media (max-width: 600px) {
+    font-size: 1rem;
+    padding: 14px 28px;
   }
 `;
 

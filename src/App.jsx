@@ -157,10 +157,10 @@ function App() {
           {telefone && <>Telefone: <strong>{telefone}</strong><br /></>}
           <br />
           {textoDefesa || "[texto da defesa não informado]"}
-          <br /><br />
+          <br />
           Solicito a análise cuidadosa dessa defesa e a reconsideração da multa
           aplicada.
-          <br /><br />
+          <br />
           Atenciosamente,
           <br /><br />
         </p>
