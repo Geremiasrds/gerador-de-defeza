@@ -222,7 +222,7 @@ function App() {
           Solicito a análise cuidadosa dessa defesa e a reconsideração da multa aplicada.
           <br /><br />
           Atenciosamente,
-          <br />
+          
         </p>
 
         <SignatureLine />

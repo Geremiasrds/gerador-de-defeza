@@ -144,8 +144,7 @@ export const Button = styled.button`
 export const SignatureLine = styled.div`
   border-bottom: 1px solid #000;
   width: 250px;
-  margin: 30px auto 10px auto;
-  height: 30px;
+  height: 20px;
 `;
 
 export const SignatureText = styled.p`
