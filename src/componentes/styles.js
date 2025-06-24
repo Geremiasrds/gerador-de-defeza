@@ -75,13 +75,13 @@ export const Textarea = styled.textarea`
 export const PdfContent = styled.div`
   width: 595px;
   padding: 50px 40px;
-  background-color: #ffffff;
+  background-color:rgb(255, 255, 255);
   border: 1px solid #ccc;
   border-radius: 10px;
   color: #222;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.8;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: strong;
   box-sizing: border-box;
   white-space: pre-wrap;
 `;
