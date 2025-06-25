@@ -21,8 +21,8 @@ const formatarData = (dataISO) => {
 };
 
 const camposPorEtapa = {
-  1: ["textoDefesa"],
-  2: ["nome", "data", "hora", "numeroMulta", "local"],
+  1: ["nome", "textoDefesa"],
+  2: ["data", "hora", "numeroMulta", "local"],
   3: ["placa", "cnh", "cpf", "telefone", "email", "nomeAssinatura"],
 };
 
@@ -56,7 +56,8 @@ function App() {
     },
   });
 
-  const textoDefesa = watch("textoDefesa");
+  // Objeto com todos os valores atuais para controlar inputs e visualização
+  const valores = watch();
 
   useEffect(() => {
     const subscription = watch((dados) => {
@@ -128,6 +129,37 @@ function App() {
       const tipo = tipoMap[campo] || "text";
       const id = `input-${campo}`;
 
+      const valorAtual = valores[campo] || "";
+
+      if (campo === "nome") {
+        return (
+          <div
+            key={campo}
+            style={{
+              marginBottom: 16,
+              display: "flex",
+              flexDirection: "column",
+              gap: 6,
+            }}
+          >
+            <label
+              htmlFor={id}
+              style={{ marginBottom: 4, fontWeight: "bold", display: "block" }}
+            >
+              Eu
+            </label>
+            <Input
+              id={id}
+              type="text"
+              placeholder="Digite seu nome"
+              {...register(campo)}
+              value={valorAtual}
+              onChange={(e) => setValue(campo, e.target.value)}
+            />
+          </div>
+        );
+      }
+
       return (
         <div
           key={campo}
@@ -142,6 +174,8 @@ function App() {
               placeholder={labelMap[campo]}
               {...register(campo, { required: campo === "textoDefesa" })}
               rows={6}
+              value={valorAtual}
+              onChange={(e) => setValue(campo, e.target.value)}
             />
           ) : (
             <Input
@@ -149,12 +183,12 @@ function App() {
               type={tipo}
               placeholder={labelMap[campo]}
               {...register(campo)}
+              value={valorAtual}
+              onChange={(e) => setValue(campo, e.target.value)}
             />
           )}
           {campo === "textoDefesa" && errors.textoDefesa && (
-            <span style={{ color: "red", marginTop: 4 }}>
-              Campo obrigatório
-            </span>
+            <span style={{ color: "red", marginTop: 4 }}>Campo obrigatório</span>
           )}
         </div>
       );
@@ -172,8 +206,8 @@ function App() {
         {etapa < 3 && (
           <Button
             onClick={() => mudarEtapa(1)}
-            disabled={etapa === 1 && !textoDefesa.trim()}
-            style={{ opacity: etapa === 1 && !textoDefesa.trim() ? 0.5 : 1 }}
+            disabled={etapa === 1 && !valores.textoDefesa?.trim()}
+            style={{ opacity: etapa === 1 && !valores.textoDefesa?.trim() ? 0.5 : 1 }}
           >
             {etapa === 2 ? "Mais" : "Próximo"}
           </Button>
@@ -181,8 +215,8 @@ function App() {
 
         <Button
           onClick={handleSubmit(gerarPDF)}
-          disabled={!textoDefesa.trim()}
-          style={{ opacity: textoDefesa.trim() ? 1 : 0.5 }}
+          disabled={!valores.textoDefesa?.trim()}
+          style={{ opacity: valores.textoDefesa?.trim() ? 1 : 0.5 }}
         >
           Gerar PDF
         </Button>
@@ -200,73 +234,90 @@ function App() {
           <HeaderText />
           <PdfTitle>{getValues("titulo")}</PdfTitle>
 
-          {getValues("textoDefesa") && (
-            <div style={{ whiteSpace: "pre-wrap", marginBottom: 16 }}>
-              {getValues("textoDefesa")}
+          {valores.nome && valores.textoDefesa ? (
+            <div
+              style={{
+                whiteSpace: "pre-wrap",
+                marginBottom: 16,
+              }}
+            >
+              <span style={{ fontWeight: "bold" }}>Eu {valores.nome}</span>{" "}
+              <span>{valores.textoDefesa}</span>
             </div>
+          ) : (
+            <>
+              {valores.nome && (
+                <div style={{ fontWeight: "bold", marginBottom: 4 }}>
+                  Eu {valores.nome}
+                </div>
+              )}
+              {valores.textoDefesa && (
+                <div style={{ whiteSpace: "pre-wrap", marginBottom: 16 }}>
+                  {valores.textoDefesa}
+                </div>
+              )}
+            </>
           )}
 
           <p>
-            {getValues("data") && (
+            {valores.data && (
               <>
-                <strong>Data da ocorrência:</strong>{" "}
-                {formatarData(getValues("data"))}
+                <strong>Data da ocorrência:</strong> {formatarData(valores.data)}
                 <br />
               </>
             )}
-            {getValues("hora") && (
+            {valores.hora && (
               <>
-                <strong>Hora da ocorrência:</strong> {getValues("hora")}
+                <strong>Hora da ocorrência:</strong> {valores.hora}
                 <br />
               </>
             )}
-            {getValues("numeroMulta") && (
+            {valores.numeroMulta && (
               <>
-                <strong>Número da multa:</strong> {getValues("numeroMulta")}
+                <strong>Número da multa:</strong> {valores.numeroMulta}
                 <br />
               </>
             )}
-            {getValues("local") && (
+            {valores.local && (
               <>
-                <strong>Local:</strong> {getValues("local")}
+                <strong>Local:</strong> {valores.local}
                 <br />
               </>
             )}
-            {getValues("placa") && (
+            {valores.placa && (
               <>
-                <strong>Placa do veículo:</strong> {getValues("placa")}
+                <strong>Placa do veículo:</strong> {valores.placa}
                 <br />
               </>
             )}
-            {getValues("cnh") && (
+            {valores.cnh && (
               <>
-                <strong>CNH:</strong> {getValues("cnh")}
+                <strong>CNH:</strong> {valores.cnh}
                 <br />
               </>
             )}
-            {getValues("cpf") && (
+            {valores.cpf && (
               <>
-                <strong>CPF:</strong> {getValues("cpf")}
+                <strong>CPF:</strong> {valores.cpf}
                 <br />
               </>
             )}
-            {getValues("telefone") && (
+            {valores.telefone && (
               <>
-                <strong>Telefone:</strong> {getValues("telefone")}
+                <strong>Telefone:</strong> {valores.telefone}
                 <br />
               </>
             )}
-            {getValues("email") && (
+            {valores.email && (
               <>
-                <strong>E-mail:</strong> {getValues("email")}
+                <strong>E-mail:</strong> {valores.email}
                 <br />
               </>
             )}
-            {getValues("nomeAssinatura") && (
+            {valores.nomeAssinatura && (
               <>
                 <br />
-                <strong>Nome para assinatura:</strong>{" "}
-                {getValues("nomeAssinatura")}
+                <strong>Nome para assinatura:</strong> {valores.nomeAssinatura}
               </>
             )}
           </p>
