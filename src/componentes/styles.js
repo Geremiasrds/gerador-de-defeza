@@ -75,9 +75,7 @@ export const Textarea = styled.textarea`
 export const PdfContent = styled.div`
   width: 600px;
   padding: 10px 10px;
-  background-color:rgb(255, 255, 255);
-  border: 1px solid #ccc;
-  border-radius: 10px;
+  background-color: rgb(255, 255, 255);
   color: #222;
   font-size: 11px;
   line-height: 1.9;
@@ -87,7 +85,6 @@ export const PdfContent = styled.div`
   @media (max-width: 600px) {
     width: 350px;
   }
-  
 `;
 
 export const HeaderText = styled.div`
@@ -137,7 +134,6 @@ export const Button = styled.button`
   @media (max-width: 600px) {
     font-size: 1rem;
     padding: 14px 28px;
-    
   }
 `;
 

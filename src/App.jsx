@@ -1,4 +1,5 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
@@ -11,85 +12,67 @@ import {
   HeaderText,
   PdfTitle,
   Button,
-  SignatureLine,
-  SignatureText,
 } from "./componentes/styles";
 
-function formatarData(dataISO) {
-  if (!dataISO) return "[data não informada]";
+const formatarData = (dataISO) => {
+  if (!dataISO) return "[não informado]";
   const [ano, mes, dia] = dataISO.split("-");
   return `${dia}/${mes}/${ano}`;
-}
+};
+
+const camposPorEtapa = {
+  1: ["textoDefesa"],
+  2: ["nome", "data", "hora", "numeroMulta", "local"],
+  3: ["placa", "cnh", "cpf", "telefone", "email", "nomeAssinatura"],
+};
 
 function App() {
   const pdfRef = useRef();
+  const [etapa, setEtapa] = useState(1);
 
-  const [titulo, setTitulo] = useState("Defesa Prévia");
-  const [nome, setNome] = useState("");
-  const [data, setData] = useState("");
-  const [hora, setHora] = useState("");
-  const [numeroMulta, setNumeroMulta] = useState("");
-  const [local, setLocal] = useState("");
-  const [placa, setPlaca] = useState("");
-  const [cnh, setCnh] = useState("");
-  const [cpf, setCpf] = useState("");
-  const [telefone, setTelefone] = useState("");
-  const [email, setEmail] = useState("");
-  const [textoDefesa, setTextoDefesa] = useState("");
-  const [nomeAssinatura, setNomeAssinatura] = useState("");
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    getValues,
+    reset,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      titulo: "Defesa Prévia",
+      nome: "",
+      data: "",
+      hora: "",
+      numeroMulta: "",
+      local: "",
+      placa: "",
+      cnh: "",
+      cpf: "",
+      telefone: "",
+      email: "",
+      textoDefesa: "",
+      nomeAssinatura: "",
+    },
+  });
+
+  const textoDefesa = watch("textoDefesa");
+
+  useEffect(() => {
+    const subscription = watch((dados) => {
+      localStorage.setItem("defesaForm", JSON.stringify(dados));
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
 
   useEffect(() => {
     const dadosSalvos = localStorage.getItem("defesaForm");
     if (dadosSalvos) {
-      const dados = JSON.parse(dadosSalvos);
-      setTitulo(dados.titulo || "Defesa Prévia");
-      setNome(dados.nome || "");
-      setData(dados.data || "");
-      setHora(dados.hora || "");
-      setNumeroMulta(dados.numeroMulta || "");
-      setLocal(dados.local || "");
-      setPlaca(dados.placa || "");
-      setCnh(dados.cnh || "");
-      setCpf(dados.cpf || "");
-      setTelefone(dados.telefone || "");
-      setEmail(dados.email || "");
-      setTextoDefesa(dados.textoDefesa || "");
-      setNomeAssinatura(dados.nomeAssinatura || "");
+      Object.entries(JSON.parse(dadosSalvos)).forEach(([key, val]) => {
+        setValue(key, val);
+      });
     }
-  }, []);
-
-  useEffect(() => {
-    const dados = {
-      titulo,
-      nome,
-      data,
-      hora,
-      numeroMulta,
-      local,
-      placa,
-      cnh,
-      cpf,
-      telefone,
-      email,
-      textoDefesa,
-      nomeAssinatura,
-    };
-    localStorage.setItem("defesaForm", JSON.stringify(dados));
-  }, [
-    titulo,
-    nome,
-    data,
-    hora,
-    numeroMulta,
-    local,
-    placa,
-    cnh,
-    cpf,
-    telefone,
-    email,
-    textoDefesa,
-    nomeAssinatura,
-  ]);
+  }, [setValue]);
 
   const gerarPDF = () => {
     const input = pdfRef.current;
@@ -97,7 +80,6 @@ function App() {
       html2canvas(input, { scale: 3, useCORS: true }).then((canvas) => {
         const imgData = canvas.toDataURL("image/png");
         const pdf = new jsPDF("p", "mm", "a4");
-
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const imgProps = pdf.getImageProperties(imgData);
         const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
@@ -109,127 +91,187 @@ function App() {
     }, 100);
   };
 
+  const limparFormulario = () => {
+    reset();
+    localStorage.removeItem("defesaForm");
+    setEtapa(1);
+  };
+
+  const mudarEtapa = (passo) =>
+    setEtapa((prev) => Math.min(Math.max(prev + passo, 1), 3));
+
+  const labelMap = {
+    textoDefesa: "Texto da defesa",
+    nome: "Nome completo do condutor",
+    data: "Data da infração",
+    hora: "Hora do acontecimento",
+    numeroMulta: "Número da multa recebida",
+    local: "Local da infração",
+    placa: "Placa do veículo",
+    cnh: "Número da CNH",
+    cpf: "CPF do condutor",
+    telefone: "Telefone para contato",
+    email: "E-mail para contato",
+    nomeAssinatura: "Nome para assinatura",
+  };
+
+  const tipoMap = {
+    data: "date",
+    hora: "time",
+    telefone: "tel",
+    email: "email",
+    textoDefesa: "textarea",
+  };
+
+  const renderizarInputs = () =>
+    camposPorEtapa[etapa].map((campo) => {
+      const tipo = tipoMap[campo] || "text";
+      const id = `input-${campo}`;
+
+      return (
+        <div
+          key={campo}
+          style={{ marginBottom: 16, display: "flex", flexDirection: "column" }}
+        >
+          <label htmlFor={id} style={{ marginBottom: 4, fontWeight: "bold" }}>
+            {labelMap[campo]}
+          </label>
+          {tipo === "textarea" ? (
+            <Textarea
+              id={id}
+              placeholder={labelMap[campo]}
+              {...register(campo, { required: campo === "textoDefesa" })}
+              rows={6}
+            />
+          ) : (
+            <Input
+              id={id}
+              type={tipo}
+              placeholder={labelMap[campo]}
+              {...register(campo)}
+            />
+          )}
+          {campo === "textoDefesa" && errors.textoDefesa && (
+            <span style={{ color: "red", marginTop: 4 }}>
+              Campo obrigatório
+            </span>
+          )}
+        </div>
+      );
+    });
+
   return (
     <Container>
-      <Title>Gerador de Defesa Prévia</Title>
+      <Title>Defesa Prévia</Title>
 
-      {/* Título do documento */}
-      <label>Escolha o título do documento:</label>
-      <select
-        value={titulo}
-        onChange={(e) => setTitulo(e.target.value)}
-        style={{
-          width: "100%",
-          padding: 12,
-          marginBottom: 20,
-          borderRadius: 8,
-          border: "1.8px solid #ddd",
-          fontSize: "1rem",
-          cursor: "pointer",
-        }}
-      >
-        <option value="Defesa Prévia">Defesa Prévia</option>
-        <option value="Recurso de Defesa Prévia">Recurso de Defesa Prévia</option>
-        <option value="Manifestação de Defesa">Manifestação de Defesa</option>
-        <option value="Defesa contra Multa de Trânsito">Defesa contra Multa de Trânsito</option>
-        <option value="Pedido de Revisão de Multa">Pedido de Revisão de Multa</option>
-        <option value="Contestação de Infração">Contestação de Infração</option>
-      </select>
+      {renderizarInputs()}
 
-      {/* Nome completo */}
-      <label htmlFor="nome">Nome completo:</label>
-      <Input id="nome" type="text" placeholder="Seu nome" value={nome} onChange={(e) => setNome(e.target.value)} />
+      <div style={{ marginTop: 16, display: "flex", gap: 10, flexWrap: "wrap" }}>
+        {etapa > 1 && <Button onClick={() => mudarEtapa(-1)}>Voltar</Button>}
 
-      {/* Data da infração */}
-      <label htmlFor="data">Data da infração:</label>
-      <Input id="data" type="date" value={data} onChange={(e) => setData(e.target.value)} />
+        {etapa < 3 && (
+          <Button
+            onClick={() => mudarEtapa(1)}
+            disabled={etapa === 1 && !textoDefesa.trim()}
+            style={{ opacity: etapa === 1 && !textoDefesa.trim() ? 0.5 : 1 }}
+          >
+            {etapa === 2 ? "Mais" : "Próximo"}
+          </Button>
+        )}
 
-      {/* Hora da infração */}
-      <label htmlFor="hora">Hora da infração:</label>
-      <Input id="hora" type="time" value={hora} onChange={(e) => setHora(e.target.value)} />
+        <Button
+          onClick={handleSubmit(gerarPDF)}
+          disabled={!textoDefesa.trim()}
+          style={{ opacity: textoDefesa.trim() ? 1 : 0.5 }}
+        >
+          Gerar PDF
+        </Button>
 
-      {/* Número da multa */}
-      <label htmlFor="multa">Número da multa:</label>
-      <Input id="multa" type="text" placeholder="Número da multa" value={numeroMulta} onChange={(e) => setNumeroMulta(e.target.value)} />
+        <Button
+          onClick={limparFormulario}
+          style={{ backgroundColor: "#ccc", color: "#000" }}
+        >
+          Limpar Tudo
+        </Button>
+      </div>
 
-      {/* Local da infração */}
-      <label htmlFor="local">Local da infração:</label>
-      <Input id="local" type="text" placeholder="Local da infração" value={local} onChange={(e) => setLocal(e.target.value)} />
+      <div style={{ marginTop: 32, overflowX: "auto" }}>
+        <PdfContent ref={pdfRef}>
+          <HeaderText />
+          <PdfTitle>{getValues("titulo")}</PdfTitle>
 
-      {/* Placa do veículo */}
-      <label htmlFor="placa">Placa do veículo:</label>
-      <Input id="placa" type="text" placeholder="Placa do veículo" value={placa} onChange={(e) => setPlaca(e.target.value)} />
+          {getValues("textoDefesa") && (
+            <div style={{ whiteSpace: "pre-wrap", marginBottom: 16 }}>
+              {getValues("textoDefesa")}
+            </div>
+          )}
 
-      {/* CNH */}
-      <label htmlFor="cnh">CNH (opcional):</label>
-      <Input id="cnh" type="text" placeholder="CNH" value={cnh} onChange={(e) => setCnh(e.target.value)} />
-
-      {/* CPF */}
-      <label htmlFor="cpf">CPF (opcional):</label>
-      <Input id="cpf" type="text" placeholder="CPF" value={cpf} onChange={(e) => setCpf(e.target.value)} />
-
-      {/* Telefone */}
-      <label htmlFor="telefone">Telefone (opcional):</label>
-      <Input id="telefone" type="tel" placeholder="Telefone" value={telefone} onChange={(e) => setTelefone(e.target.value)} />
-
-      {/* Email */}
-      <label htmlFor="email">E-mail (opcional):</label>
-      <Input id="email" type="email" placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} />
-
-      {/* Texto da defesa */}
-      <label htmlFor="defesa">Texto da defesa:</label>
-      <Textarea
-        id="defesa"
-        rows={6}
-        placeholder="Explique os motivos da sua defesa"
-        value={textoDefesa}
-        onChange={(e) => setTextoDefesa(e.target.value)}
-      />
-
-      {/* Nome para assinatura */}
-      <label htmlFor="assinatura">Nome para assinatura (opcional):</label>
-      <Input
-        id="assinatura"
-        type="text"
-        placeholder="Nome da assinatura"
-        value={nomeAssinatura}
-        onChange={(e) => setNomeAssinatura(e.target.value)}
-        style={{ marginBottom: 30 }}
-      />
-
-      {/* PDF Preview + Geração */}
-      <PdfContent ref={pdfRef}>
-        <HeaderText />
-        <PdfTitle>{titulo}</PdfTitle>
-
-        <p>
-          Eu, <strong>{nome || "[nome não informado]"}</strong>, venho apresentar minha defesa prévia referente à infração registrada no
-          dia <strong>{formatarData(data)}</strong>{hora ? ` às ${hora}` : ""}.
-          
-          A infração de número{" "}
-          <strong>{numeroMulta || "[número da multa não informado]"}</strong>{" "}
-          ocorreu no local <strong>{local || "[local não informado]"}</strong>.
-          
-          {placa && <>Placa do veículo: <strong>{placa}</strong><br /></>}
-          {cnh && <>CNH: <strong>{cnh}</strong><br /></>}
-          {cpf && <>CPF: <strong>{cpf}</strong><br /></>}
-          {telefone && <>Telefone: <strong>{telefone}</strong><br /></>}
-          {email && <>E-mail: <strong>{email}</strong><br /></>}
-
-          <br />
-          {textoDefesa || "[texto da defesa não informado]"}
-          <br />
-          Solicito a análise cuidadosa dessa defesa e a reconsideração da multa aplicada.
-          <br /><br />
-          Atenciosamente,
-          
-        </p>
-
-        <SignatureLine />
-        <SignatureText>{nomeAssinatura || ""}</SignatureText>
-      </PdfContent>
-
-      <Button onClick={gerarPDF}>Gerar PDF</Button>
+          <p>
+            {getValues("data") && (
+              <>
+                <strong>Data da ocorrência:</strong>{" "}
+                {formatarData(getValues("data"))}
+                <br />
+              </>
+            )}
+            {getValues("hora") && (
+              <>
+                <strong>Hora da ocorrência:</strong> {getValues("hora")}
+                <br />
+              </>
+            )}
+            {getValues("numeroMulta") && (
+              <>
+                <strong>Número da multa:</strong> {getValues("numeroMulta")}
+                <br />
+              </>
+            )}
+            {getValues("local") && (
+              <>
+                <strong>Local:</strong> {getValues("local")}
+                <br />
+              </>
+            )}
+            {getValues("placa") && (
+              <>
+                <strong>Placa do veículo:</strong> {getValues("placa")}
+                <br />
+              </>
+            )}
+            {getValues("cnh") && (
+              <>
+                <strong>CNH:</strong> {getValues("cnh")}
+                <br />
+              </>
+            )}
+            {getValues("cpf") && (
+              <>
+                <strong>CPF:</strong> {getValues("cpf")}
+                <br />
+              </>
+            )}
+            {getValues("telefone") && (
+              <>
+                <strong>Telefone:</strong> {getValues("telefone")}
+                <br />
+              </>
+            )}
+            {getValues("email") && (
+              <>
+                <strong>E-mail:</strong> {getValues("email")}
+                <br />
+              </>
+            )}
+            {getValues("nomeAssinatura") && (
+              <>
+                <br />
+                <strong>Nome para assinatura:</strong>{" "}
+                {getValues("nomeAssinatura")}
+              </>
+            )}
+          </p>
+        </PdfContent>
+      </div>
     </Container>
   );
 }
