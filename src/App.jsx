@@ -23,7 +23,8 @@ const formatarData = (dataISO) => {
 const camposPorEtapa = {
   1: ["nome", "textoDefesa"],
   2: ["data", "hora", "numeroMulta", "local"],
-  3: ["placa", "cnh", "cpf", "telefone", "email", "nomeAssinatura"],
+  3: ["placa", "cnh", "cpf", "telefone", "email"],
+  // removi nomeAssinatura daqui porque não será mais digitado
 };
 
 function App() {
@@ -51,7 +52,7 @@ function App() {
       telefone: "",
       email: "",
       textoDefesa: "",
-      nomeAssinatura: "",
+      // removido nomeAssinatura
     },
   });
 
@@ -111,7 +112,6 @@ function App() {
     cpf: "CPF do condutor",
     telefone: "Telefone para contato",
     email: "E-mail para contato",
-    nomeAssinatura: "Nome para assinatura",
   };
 
   const tipoMap = {
@@ -312,12 +312,30 @@ function App() {
                 <br />
               </>
             )}
-            {valores.nomeAssinatura && (
-              <>
-                <br />
-                <strong>Nome para assinatura:</strong> {valores.nomeAssinatura}
-              </>
-            )}
+
+            {/* Espaço para assinatura manual */}
+            <br />
+          
+           <div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    marginTop: 40,
+    gap: 10,
+  }}
+>
+  <strong>Minha assinatura:</strong>
+  <div
+    style={{
+      borderBottom: "1px solid black",
+      flexGrow: 1,
+      height: 24,
+      minWidth: "200px",
+    }}
+  ></div>
+</div>
+             
+           
           </p>
         </PdfContent>
       </div>
