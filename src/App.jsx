@@ -189,7 +189,7 @@ function App() {
 
         <Button
           onClick={limparFormulario}
-          style={{ backgroundColor: "#ccc", color: "#000" }}
+          style={{ backgroundColor: "red", color: "white" }}
         >
           Limpar Tudo
         </Button>
