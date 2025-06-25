@@ -74,7 +74,7 @@ export const Textarea = styled.textarea`
 
 export const PdfContent = styled.div`
   width: 600px;
-  padding: 10px 10px;
+  padding: 10px 20px;
   background-color: rgb(255, 255, 255);
   color: #222;
   font-size: 11px;

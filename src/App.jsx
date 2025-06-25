@@ -35,7 +35,6 @@ function App() {
     handleSubmit,
     watch,
     setValue,
-    getValues,
     reset,
     formState: { errors },
   } = useForm({
@@ -56,7 +55,6 @@ function App() {
     },
   });
 
-  // Objeto com todos os valores atuais para controlar inputs e visualização
   const valores = watch();
 
   useEffect(() => {
@@ -78,7 +76,7 @@ function App() {
   const gerarPDF = () => {
     const input = pdfRef.current;
     setTimeout(() => {
-      html2canvas(input, { scale: 3, useCORS: true }).then((canvas) => {
+      html2canvas(input, { scale: 4, useCORS: true }).then((canvas) => {
         const imgData = canvas.toDataURL("image/png");
         const pdf = new jsPDF("p", "mm", "a4");
         const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -128,7 +126,6 @@ function App() {
     camposPorEtapa[etapa].map((campo) => {
       const tipo = tipoMap[campo] || "text";
       const id = `input-${campo}`;
-
       const valorAtual = valores[campo] || "";
 
       if (campo === "nome") {
@@ -232,17 +229,18 @@ function App() {
       <div style={{ marginTop: 32, overflowX: "auto" }}>
         <PdfContent ref={pdfRef}>
           <HeaderText />
-          <PdfTitle>{getValues("titulo")}</PdfTitle>
+          <PdfTitle>{valores.titulo}</PdfTitle>
 
           {valores.nome && valores.textoDefesa ? (
             <div
               style={{
                 whiteSpace: "pre-wrap",
                 marginBottom: 16,
+                fontWeight: "bold",
               }}
             >
-              <span style={{ fontWeight: "bold" }}>Eu {valores.nome}</span>{" "}
-              <span>{valores.textoDefesa}</span>
+              Eu {valores.nome}{" "}
+              <span style={{ fontWeight: "normal" }}>{valores.textoDefesa}</span>
             </div>
           ) : (
             <>
